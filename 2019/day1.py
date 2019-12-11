@@ -10,24 +10,24 @@ logging.basicConfig(format='%(asctime)s %(message)s',
 def calculate_total_mass(module):
     '''Performs the actual calculation'''
 
-    logging.info('module weighs: %s', module)
     if isinstance(module, list):
         return sum([calculate_total_mass(i) for i in module])
 
     def calculate_fuel_weight_for_mass(mass):
-        def calculate_fuel(i):
-            return math.floor(i / 3.0) - 2
+        logging.info('mass weighs: %s', mass)
 
-        required_weight = calculate_fuel(mass)
-        logging.info('required fuel for mass of size %s is %s', mass, required_weight)
-        if required_weight > 0:
-            additional_fuel_weight = calculate_total_mass(required_weight)
-        else:
-            return 0
-        return required_weight + additional_fuel_weight
+        def calculate_fuel(i):
+            fuel = math.floor(i / 3.0) - 2
+            return max(fuel, 0)
+
+        required = calculate_fuel(mass)
+        additional = calculate_total_mass(required) if required > 0 else 0
+
+        logging.info('required fuel for mass of size %s is %s', mass, required)
+
+        return required + additional
 
     fuel_required = calculate_fuel_weight_for_mass(module)
-    # print('for a module weight of', str(module) + ',', str(fuel_required), 'fuel', 'is required')
     return fuel_required
 
 if __name__ == '__main__':
